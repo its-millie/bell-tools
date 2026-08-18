@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Machine Failure Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Operations Intelligence</p>
+        <h1>Machine Failure Dashboard</h1>
+        <p class="subhead">Client-side HTML dashboard for GitHub Pages deployment.</p>
+      </div>
+      <div class="hero-actions">
+        <label class="btn btn-primary" for="csvInput">Upload CSV</label>
+        <input id="csvInput" type="file" accept=".csv" />
+        <button id="loadDefaultBtn" class="btn btn-ghost" type="button">Load bundled CSV</button>
+      </div>
+    </header>
+
+    <section class="controls-panel">
+      <h2>Filters</h2>
+      <div class="controls-grid">
+        <label>
+          <span>Machine</span>
+          <select id="machineFilter" multiple></select>
+        </label>
+        <label>
+          <span>Severity</span>
+          <select id="severityFilter" multiple></select>
+        </label>
+        <label>
+          <span>Root Cause Category</span>
+          <select id="categoryFilter" multiple></select>
+        </label>
+        <label>
+          <span>Start Date</span>
+          <input id="startDate" type="date" />
+        </label>
+        <label>
+          <span>End Date</span>
+          <input id="endDate" type="date" />
+        </label>
+      </div>
+      <p id="statusLine" class="status-line">Load data to begin.</p>
+    </section>
+
+    <section id="kpiRow" class="kpi-row"></section>
+
+    <section class="tabs-panel">
+      <nav class="tabs-nav" aria-label="Dashboard tabs">
+        <button class="tab-btn active" data-tab="overview" type="button">Overview</button>
+        <button class="tab-btn" data-tab="deep" type="button">Deep Dive</button>
+        <button class="tab-btn" data-tab="sensor" type="button">Sensor Insights</button>
+        <button class="tab-btn" data-tab="raw" type="button">Raw Data</button>
+      </nav>
+
+      <div id="tab-overview" class="tab-content active">
+        <div class="chart-grid">
+          <article class="card"><h3>Breakdowns per Machine (past 30 days)</h3><div id="chartBreakdowns"></div></article>
+          <article class="card"><h3>Downtime per Machine (past 30 days)</h3><div id="chartDowntime"></div></article>
+          <article class="card"><h3>Breakdowns by Severity (past 30 days)</h3><div id="chartSeverity"></div></article>
+          <article class="card"><h3>Heatmap: Machine vs Day of Week</h3><div id="chartHeatmap"></div></article>
+        </div>
+      </div>
+
+      <div id="tab-deep" class="tab-content">
+        <div class="chart-grid">
+          <article class="card"><h3>Pareto: Root Cause Categories</h3><div id="chartPareto"></div></article>
+          <article class="card"><h3>Root Cause Drill-Down</h3><div id="chartSunburst"></div><p id="sunburstMessage" class="inline-note hidden"></p></article>
+          <article class="card"><h3>Breakdown Clock</h3><div id="chartPolar"></div></article>
+          <article class="card"><h3>Downtime by Severity</h3><div id="chartBox"></div></article>
+          <article class="card card-span"><h3>Total Weekly Downtime</h3><div id="chartWeekly"></div></article>
+          <article class="card card-span"><h3>Cumulative Breakdown Race</h3><div id="chartRace"></div></article>
+        </div>
+      </div>
+
+      <div id="tab-sensor" class="tab-content">
+        <div class="chart-grid">
+          <article class="card"><h3>Temperature vs Downtime</h3><div id="chartTemp"></div><p id="tempMsg" class="inline-note hidden"></p></article>
+          <article class="card"><h3>Vibration vs Downtime</h3><div id="chartVibration"></div><p id="vibrationMsg" class="inline-note hidden"></p></article>
+          <article class="card"><h3>Motor Current vs Lubricant Quality</h3><div id="chartMotorLube"></div><p id="motorLubeMsg" class="inline-note hidden"></p></article>
+          <article class="card"><h3>Correlation Matrix</h3><div id="chartCorrelation"></div><p id="corrMsg" class="inline-note hidden"></p></article>
+        </div>
+      </div>
+
+      <div id="tab-raw" class="tab-content">
+        <div class="card">
+          <div class="raw-actions">
+            <h3>Filtered Rows</h3>
+            <button id="downloadCsvBtn" class="btn btn-primary" type="button">Download filtered CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table id="rawTable">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
